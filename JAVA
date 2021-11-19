@@ -1,0 +1,50 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class Main {
+	public static void main(String[] args) {
+		try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+		try {																		//  DATABASE NAME
+			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/UniversityRegistrationSystem?" + "user=root");
+
+			try {
+				Statement stmt = conn.createStatement();
+			    
+			    //Execute query and get number of columns
+				ResultSet rs = stmt.executeQuery("SELECT * FROM Course");	//The query you want to do
+			    ResultSetMetaData rsmd = rs.getMetaData();
+			    int columnsNumber = rsmd.getColumnCount();
+			    
+			    //print column names
+			    for(int i = 1; i <= columnsNumber; i++)
+		            System.out.print(rsmd.getColumnName(i) + "\t");
+			    System.out.println();
+			    
+			    if (rs.next() == false) 
+		    		System.out.println("no results");
+			    else {
+				    do {
+				    	for(int i = 1; i <= columnsNumber; i++)
+				            System.out.print(rs.getString(i) + "\t");	//column 1 is getString(1) not getString(0) from rs
+				        System.out.println();
+				    } while (rs.next());		//iterate through each row returned
+			    }
+			} catch (SQLException e){
+			    e.printStackTrace();
+			}
+
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+}
